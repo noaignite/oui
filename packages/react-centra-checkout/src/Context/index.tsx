@@ -33,6 +33,11 @@ export interface ProviderProps {
   */
   tokenName?: string
   tokenCookieOptions?: Cookies.CookieAttributes
+  /**
+    Enables using accept header instead of api-token header
+    @defaultValue `false`
+  */
+  useAcceptHeader?: boolean
 }
 
 export interface ContextMethods {
@@ -184,10 +189,22 @@ export function CentraProvider(props: ProviderProps) {
     tokenExpires = 365,
     tokenName = 'centra-checkout-token',
     tokenCookieOptions = {},
+    useAcceptHeader = false,
   } = props
 
   const [selection, setSelection] = React.useState<Centra.CheckoutApi.SelectionResponse>(
     initialSelection || SELECTION_INITIAL_VALUE,
+  )
+
+  const setTokenHeader = React.useCallback(
+    (token: string) => {
+      if (useAcceptHeader) {
+        apiClient.headers.set('Accept', `application/json; api-token=${token}`)
+      } else {
+        apiClient.headers.set('api-token', token)
+      }
+    },
+    [useAcceptHeader],
   )
 
   // set api client url
@@ -195,7 +212,7 @@ export function CentraProvider(props: ProviderProps) {
 
   // set api token if available
   if (initialSelection?.token) {
-    apiClient.headers.set('api-token', initialSelection.token)
+    setTokenHeader(initialSelection?.token)
   }
 
   const selectionApiCall = React.useCallback(
@@ -237,7 +254,7 @@ export function CentraProvider(props: ProviderProps) {
 
       const apiToken = cookies.get(tokenName)
       if (apiToken) {
-        apiClient.headers.set('api-token', apiToken)
+        setTokenHeader(apiToken)
       }
 
       if (!selectionData) {
@@ -253,12 +270,12 @@ export function CentraProvider(props: ProviderProps) {
         setSelection(response)
 
         if (response.token && response.token !== apiToken) {
-          apiClient.headers.set('api-token', response.token)
+          setTokenHeader(response.token)
           cookies.set(tokenName, response.token, { expires: tokenExpires, ...tokenCookieOptions })
         }
       }
     },
-    [tokenExpires, tokenName, tokenCookieOptions],
+    [tokenExpires, tokenName, tokenCookieOptions, setTokenHeader],
   )
 
   /* HANDLER METHODS */
@@ -442,10 +459,14 @@ export function CentraProvider(props: ProviderProps) {
 
   /** Resets the selection. Useful if you need a fresh `api-token` (when a user exits a campaign site, for example). */
   const resetSelection = React.useCallback<NonNullable<ContextMethods['resetSelection']>>(() => {
-    apiClient.headers.delete('api-token')
+    if (useAcceptHeader) {
+      apiClient.headers.set('Accept', 'application/json')
+    } else {
+      apiClient.headers.delete('api-token')
+    }
     cookies.remove(tokenName)
     init()
-  }, [init, tokenName])
+  }, [init, tokenName, useAcceptHeader])
 
   const sendCustomerResetPasswordEmail = React.useCallback<
     NonNullable<ContextMethods['sendCustomerResetPasswordEmail']>
@@ -612,7 +633,10 @@ export function useCentraHandlers(): ContextMethods {
 }
 
 /** Returns the latest order receipt given a selection token */
-export function useCentraReceipt(token: string): Centra.CheckoutApi.OrderCompleteResponse {
+export function useCentraReceipt(
+  token: string,
+  useAcceptHeader = false,
+): Centra.CheckoutApi.OrderCompleteResponse {
   const [result, setResult] = React.useState<Centra.CheckoutApi.OrderCompleteResponse>({})
   const { apiUrl } = useCentraSelection()
 
@@ -623,12 +647,16 @@ export function useCentraReceipt(token: string): Centra.CheckoutApi.OrderComplet
   React.useEffect(() => {
     // create a new ApiClient in order to temporarily use a different token
     const tempApiClient = new ApiClient(apiUrl)
-    tempApiClient.headers.set('api-token', token)
+    if (useAcceptHeader) {
+      tempApiClient.headers.set('Accept', `application/json; api-token=${tempApiClient}`)
+    } else {
+      tempApiClient.headers.set('api-token', `api-token=${tempApiClient}`)
+    }
 
     tempApiClient.request('GET', 'receipt').then((response) => {
       setResult(response)
     })
-  }, [apiUrl, token])
+  }, [apiUrl, token, useAcceptHeader])
 
   return result
 }
