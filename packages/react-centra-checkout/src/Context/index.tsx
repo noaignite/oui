@@ -636,11 +636,31 @@ export function useCentraReceipt(token: string): Centra.CheckoutApi.OrderComplet
 /** Returns the latest orders for the currently logged in user
   @param from - Display orders from this index. Defaults to 0.
   @param size - Display this many orders. Defaults lists all orders.
+  @param token.tokenName - The name of the cookie used to use/store as Centra checkout token
+  @param token.tokenExpires -  When the cookie used to store the Centra checkout token will expire, days as a number or a Date
+  @param token.tokenCookieOptions - Cookie options
 */
-export function useCentraOrders(from?: number, size?: number): Centra.CheckoutApi.OrdersResponse {
+export function useCentraOrders(
+  from?: number,
+  size?: number,
+  token?: {
+    tokenName?: string
+    tokenExpires?: number | Date
+    tokenCookieOptions?: Cookies.CookieAttributes
+  },
+): Centra.CheckoutApi.OrdersResponse {
   const [result, setResult] = React.useState<Centra.CheckoutApi.OrdersResponse>({})
 
-  React.useEffect(() => {
+  const fetchOrders = React.useCallback(() => {
+    let apiToken: string | undefined
+
+    if (token?.tokenName) {
+      apiToken = cookies.get(token.tokenName)
+      if (apiToken) {
+        apiClient.headers.set('api-token', apiToken)
+      }
+    }
+
     // fetch orders
     apiClient
       .request('POST', 'orders', {
@@ -648,9 +668,22 @@ export function useCentraOrders(from?: number, size?: number): Centra.CheckoutAp
         ...(size && { size }),
       })
       .then((response) => {
+        if (apiToken !== undefined && response.token && response.token !== apiToken) {
+          apiClient.headers.set('api-token', response.token)
+          if (token?.tokenName) {
+            cookies.set(token.tokenName, response.token, {
+              expires: token?.tokenExpires || 365,
+              ...token?.tokenCookieOptions,
+            })
+          }
+        }
         setResult(response)
       })
-  }, [from, size])
+  }, [setResult, from, size, token?.tokenName, token?.tokenCookieOptions, token?.tokenExpires])
+
+  React.useEffect(() => {
+    fetchOrders()
+  }, [from, size, fetchOrders])
 
   return result
 }
