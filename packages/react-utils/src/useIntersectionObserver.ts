@@ -75,5 +75,7 @@ export const useIntersectionObserver = (
     return () => {
       observer.disconnect()
     }
-  }, [ref, when, isTerminated, once, root, rootMargin, threshold])
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Compare threshold as string
+  }, [ref, when, isTerminated, once, root, rootMargin, JSON.stringify(threshold)])
 }
