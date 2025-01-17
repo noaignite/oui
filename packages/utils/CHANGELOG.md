@@ -1,5 +1,11 @@
 # @noaignite/utils
 
+## 3.4.0
+
+### Minor Changes
+
+- 06e90d3: feat(utils): add `toRootRelativePath` function
+
 ## 3.3.0
 
 ### Minor Changes
