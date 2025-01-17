@@ -5,7 +5,7 @@ type ButtonProps = ComponentProps<'button'> & {
   myProp?: string
 }
 
-function Button(props: ButtonProps): JSX.Element {
+function Button(props: ButtonProps) {
   const { children, className, disabled, ...rest } = props
 
   return (

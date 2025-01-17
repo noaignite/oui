@@ -1,6 +1,6 @@
 'use client'
 
-import { Component } from 'react'
+import { Component, type JSX } from 'react'
 
 export type ErrorBoundaryFallbackProps = {
   blockType?: string

@@ -1,7 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- No need to be strict here */
 
 import { render, screen, type RenderResult } from '@testing-library/react'
-import { cloneElement, createRef, forwardRef, useCallback, useState, type Ref } from 'react'
+import {
+  cloneElement,
+  createRef,
+  forwardRef,
+  useCallback,
+  useState,
+  type ReactElement,
+  type Ref,
+} from 'react'
 import { describe, expect, it } from 'vitest'
 import { getReactElementRef } from './getReactElementRef'
 import { useForkRef } from './useForkRef'
@@ -48,7 +56,7 @@ describe('useForkRef', () => {
   })
 
   it('does nothing if none of the forked branches requires a ref', () => {
-    const Outer = forwardRef(function Outer(props: { children: React.ReactElement }, ref) {
+    const Outer = forwardRef(function Outer(props: { children: ReactElement<any> }, ref) {
       const { children } = props
       const handleRef = useForkRef(getReactElementRef(children), ref)
 

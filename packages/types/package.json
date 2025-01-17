@@ -17,6 +17,7 @@
   },
   "license": "MIT",
   "author": "NoA Ignite",
+  "sideEffects": false,
   "types": "./src/index.ts",
   "files": [
     "src/**"
@@ -26,16 +27,18 @@
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "@types/react": "^18.3.12",
-    "react": "^18.3.1",
+    "@types/react": "^19.0.2",
+    "react": "^19.0.0",
     "typescript": "5.4.5"
   },
   "peerDependencies": {
-    "@types/react": "^18.0.0 || ^19.0.0",
-    "react": "^18.0.0"
+    "@types/react": "^17.0.0 || ^18.0.0 || ^19.0.0",
+    "react": "^17.0.0 || ^18.0.0 || ^19.0.0"
   },
-  "engines": {
-    "node": ">=18.0.0"
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   },
   "publishConfig": {
     "access": "public"
