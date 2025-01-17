@@ -45,7 +45,7 @@ export const useTimeout = (
   }, [callback])
 
   useEffect(() => {
-    if (!when || !(typeof delay !== 'number')) return
+    if (!when || typeof delay !== 'number') return
 
     const timeout = setTimeout(() => {
       savedCallback.current()
