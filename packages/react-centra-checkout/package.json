@@ -53,7 +53,7 @@
     "jsdom": "^25.0.1",
     "nock": "14.0.0-beta.18",
     "tsup": "^8.3.5",
-    "typescript": "5.4.5",
+    "typescript": "5.7.3",
     "vitest": "^2.1.8"
   },
   "peerDependencies": {

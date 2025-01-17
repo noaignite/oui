@@ -34,7 +34,7 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "tsup": "^8.3.5",
-    "typescript": "5.4.5",
+    "typescript": "5.7.3",
     "vitest": "^2.1.8"
   },
   "engines": {
