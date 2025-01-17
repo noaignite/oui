@@ -39,7 +39,7 @@ export const useInterval = (
   }, [callback])
 
   useEffect(() => {
-    if (!when || !(typeof delay !== 'number')) return
+    if (!when || typeof delay !== 'number') return
 
     const interval = setInterval(() => {
       savedCallback.current()
