@@ -45,7 +45,7 @@
     "@noaignite/types": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@testing-library/react": "^16.1.0",
+    "@testing-library/react": "^16.2.0",
     "@types/js-cookie": "^3.0.1",
     "@types/node": "^22.7.9",
     "@types/react": "^18.3.12",
