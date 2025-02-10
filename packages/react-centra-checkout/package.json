@@ -51,7 +51,7 @@
     "@types/react": "^18.3.12",
     "@vitest/coverage-v8": "^2.1.8",
     "jsdom": "^25.0.1",
-    "nock": "14.0.0-beta.18",
+    "nock": "14.0.1",
     "tsup": "^8.3.5",
     "typescript": "5.4.5",
     "vitest": "^2.1.8"
